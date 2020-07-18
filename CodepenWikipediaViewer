@@ -1,0 +1,45 @@
+var x = document.getElementById("searchicon");
+var y = document.getElementById("searchbox");
+function togglesearch(){
+  x.style.display = 'none';
+  y.style.display = 'block';
+  $("#lastsentence").css('display', 'none');
+  //document.getElementById("searchframe").focus();
+  //$("#lastsentence").fadeIn('slow');
+}
+function toggleicon(){
+  x.style.display = 'block';
+  y.style.display = 'none';
+  $("#searchicon").fadeToggle("slow");
+}
+function wiki(event){
+  $("#searchclick").click(function(){
+    var keyword = $("#searchframe").val();
+    var apilink = "https://en.wikipedia.org/w/api.php?action=query&list=search&format=json&srlimit=10&srsearch=" + keyword + "&srnamespace=0&prop=revisions&rvprop=content&callback=?";
+
+    $.ajax({
+      type: "GET",
+      url: apilink,
+      dataType: "json",
+      success: function(json){
+        $("#testapi").text(json.query.pages[6713].index);
+      }
+    });
+  });
+}
+
+function raw(event){
+  if (event.keyCode === 13){
+    var rawlink = "https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=conan&format=json&callback=?";
+    $.getJSON(rawlink, function(json){
+      $("#testapi").text(json.query.pages[6713].index);
+    });
+  }  
+}
+
+function unit(event){ //work
+  if (event.keyCode === 13) {
+    var keyword = $("#searchframe").val();
+    $("#testapi").text(keyword);
+  }
+} 

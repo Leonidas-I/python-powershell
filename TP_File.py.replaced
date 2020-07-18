@@ -1,0 +1,252 @@
+"""This module contains code from
+Think Python by Allen B. Downey
+http://thinkpython.com
+
+Copyright 2012 Allen B. Downey
+License: GNU GPLv3 http://www.gnu.org/licenses/gpl.html
+
+
+walk.py
+"""
+
+import sys
+
+
+def sed(replacendum, replace, source, dest):
+    """Reads a source file and writes the destination file.
+
+    In each line, replaces replacendum with replace.
+
+    replacendum: string
+    replace: string
+    source: string filename
+    dest: string filename
+    """
+    try:
+        fin = open(source, 'r')
+        fout = open(dest, 'w')
+
+        for line in fin:
+            line = line.replace(replacendum, replace)
+            fout.write(line)
+
+        fin.close()
+        fout.close()
+    except:
+        print 'Something went wrong.'
+
+
+def main(name):
+    replacendum = 'replacendum'
+    replace = 'replacendum'
+    source = name
+    dest = name + '.replaced'
+    sed(replacendum, replace, source, dest)
+
+
+if __name__ == '__main__':
+    main(*sys.argv)
+
+
+"""This module contains code from
+Think Python by Allen B. Downey
+http://thinkpython.com
+
+Copyright 2012 Allen B. Downey
+License: GNU GPLv3 http://www.gnu.org/licenses/gpl.html
+
+
+sed.py
+"""
+
+import sys
+
+
+def sed(replacendum, replace, source, dest):
+    """Reads a source file and writes the destination file.
+
+    In each line, replaces replacendum with replace.
+
+    replacendum: string
+    replace: string
+    source: string filename
+    dest: string filename
+    """
+    try:
+        fin = open(source, 'r')
+        fout = open(dest, 'w')
+
+        for line in fin:
+            line = line.replace(replacendum, replace)
+            fout.write(line)
+
+        fin.close()
+        fout.close()
+    except:
+        print 'Something went wrong.'
+
+
+def main(name):
+    replacendum = 'replacendum'
+    replace = 'replacendum'
+    source = name
+    dest = name + '.replaced'
+    sed(replacendum, replace, source, dest)
+
+
+if __name__ == '__main__':
+    main(*sys.argv)
+
+
+
+"""This module contains code from
+Think Python by Allen B. Downey
+http://thinkpython.com
+
+Copyright 2012 Allen B. Downey
+License: GNU GPLv3 http://www.gnu.org/licenses/gpl.html
+
+
+anagram_sets.py
+"""
+
+
+def signature(s):
+    """Returns the signature of this string, which is a string
+    that contains all of the letters in order.
+    """
+    t = list(s)
+    t.sort()
+    t = ''.join(t)
+    return t
+
+
+def all_anagrams(filename):
+    """Finds all anagrams in a list of words.
+
+    filename: string filename of the word list
+
+    Returns: a map from each word to a list of its anagrams.
+    """
+    d = {}
+    for line in open(filename):
+        word = line.strip().lower()
+        t = signature(word)
+
+        if t not in d:
+            d[t] = [word]
+        else:
+            d[t].append(word)
+    return d
+
+
+def print_anagram_sets(d):
+    """Prints the anagram sets in d.
+
+    d: map from words to list of their anagrams
+    """
+    for v in d.values():
+        if len(v) > 1:
+            print len(v), v
+
+
+def print_anagram_sets_in_order(d):
+    """Prints the anagram sets in d in decreasing order of size.
+
+    d: map from words to list of their anagrams
+    """
+
+    # make a list of (length, word pairs)
+    t = []
+    for v in d.values():
+        if len(v) > 1:
+            t.append((len(v), v))
+
+    # sort in ascending order of length
+    t.sort()
+
+    # print the sorted list
+    for x in t:
+        print x
+
+
+def filter_length(d, n):
+    """Select only the words in d that have n letters.
+
+    d: map from word to list of anagrams
+    n: integer number of letters
+
+    Returns: new map from word to list of anagrams
+    """
+    res = {}
+    for word, anagrams in d.iteritems():
+        if len(word) == n:
+            res[word] = anagrams
+    return res
+
+
+if __name__ == '__main__':
+    d = all_anagrams('words.txt')
+    print_anagram_sets_in_order(d)
+
+    eight_letters = filter_length(d, 8)
+    print_anagram_sets_in_order(eight_letters)
+    
+
+"""This module contains code from
+Think Python by Allen B. Downey
+http://thinkpython.com
+
+Copyright 2012 Allen B. Downey
+License: GNU GPLv3 http://www.gnu.org/licenses/gpl.html
+
+
+anagrams.db
+"""
+
+import shelve
+import sys
+
+from anagram_sets import *
+
+
+def store_anagrams(filename, ad):
+    """Stores the anagrams in ad in a shelf.
+
+    filename: string file name of shelf
+    ad: dictionary that maps strings to list of anagrams
+    """
+    shelf = shelve.open(filename, 'c')
+
+    for word, word_list in ad.iteritems():
+        shelf[word] =  word_list
+
+    shelf.close()
+
+
+def read_anagrams(filename, word):
+    """Looks up a word in a shelf and returns a list of its anagrams.
+
+    filename: string file name of shelf
+    word: word to look up
+    """
+    shelf = shelve.open(filename)
+    sig = signature(word)
+    try:
+        return shelf[sig]
+    except KeyError:
+        return []
+
+
+def main(name, command='store'):
+    if command == 'store':
+        ad = all_anagrams('words.txt')
+        store_anagrams('anagrams.db', ad)
+    else:
+        print read_anagrams('anagrams.db', command)
+
+
+
+if __name__ == '__main__':
+    main(*sys.argv)
+    
